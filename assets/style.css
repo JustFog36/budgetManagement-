@@ -1,0 +1,9 @@
+header {
+    background-color: darkgrey;
+    color: white;
+}
+
+.hidden{
+    color: purple;
+    display: none;
+}
