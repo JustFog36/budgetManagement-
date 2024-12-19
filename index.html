@@ -3,24 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/style.css">
-    <title>Budget Management</title>
+    <title>Money Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f5e9;
+            border: 1px solid #d4e5d7;
+            border-radius: 5px;
+        }
+
+        .expense-list {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .expense-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .expense-list li {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        BUDGET MANAGEMENT
+        <h1>Money Manager</h1>
     </header>
-    <section>
-        <h1>INCOME: <input></input> 
-        </h1>
-        <h2>EXPENSES:  <button id="expenseBtn">+</button>
-            <div class="hidden">
-                <input type="text" id="expenseTitle"></input>
-                <span class="currencyinput">$<input type="number" id="expenseAmnt"></span>
-            </div>
-        </h2>
+    <div class="container">
+        <h2>Budget Calculator</h2>
+        <div class="form-group">
+            <label for="income">Monthly Income ($):</label>
+            <input type="number" id="income" placeholder="Enter your income">
+        </div>
+        <div class="form-group">
+            <label for="income-date">Income Date:</label>
+            <input type="date" id="income-date">
+        </div>
+        <button onclick="addIncome()">Add Income</button>
+        <div class="form-group">
+            <label for="expense-name">Expense Name:</label>
+            <input type="text" id="expense-name" placeholder="Enter expense name">
+        </div>
+        <div class="form-group">
+            <label for="expense-amount">Expense Amount ($):</label>
+            <input type="number" id="expense-amount" placeholder="Enter expense amount">
+        </div>
+        <div class="form-group">
+            <label for="expense-date">Expense Date:</label>
+            <input type="date" id="expense-date">
+        </div>
+        <button onclick="addExpense()">Add Expense</button>
+        <div class="expense-list">
+            <h3>Expenses</h3>
+            <ul id="expense-list"></ul>
+            <p>Total Expenses: $<span id="total-expenses">0.00</span></p>
+        </div>
+        <div class="form-group">
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date">
+        </div>
+        <div class="form-group">
+            <label for="end-date">End Date:</label>
+            <input type="date" id="end-date">
+        </div>
+        <button onclick="calculateBudget()">Calculate</button>
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
 
-    </section>
+    <script>
+        let totalExpenses = 0;
+        let expenses = [];
+        let incomes = [];
+
+        function addExpense() {
+            const expenseName = document.getElementById('expense-name').value;
+            const expenseAmount = parseFloat(document.getElementById('expense-amount').value);
+            const expenseDate = document.getElementById('expense-date').value;
+
+            if (!expenseName || isNaN(expenseAmount) || expenseAmount <= 0 || !expenseDate) {
+                alert('Please enter valid details for the expense.');
+                return;
+            }
+
+            expenses.push({ name: expenseName, amount: expenseAmount, date: new Date(expenseDate) });
+
+            totalExpenses += expenseAmount;
+
+            const expenseList = document.getElementById('expense-list');
+            const listItem = document.createElement('li');
+            listItem.textContent = `${expenseName}: $${expenseAmount.toFixed(2)} on ${expenseDate}`;
+            expenseList.appendChild(listItem);
+
+            document.getElementById('total-expenses').textContent = totalExpenses.toFixed(2);
+
+            document.getElementById('expense-name').value = '';
+            document.getElementById('expense-amount').value = '';
+            document.getElementById('expense-date').value = '';
+        }
+
+        function addIncome() {
+            const income = parseFloat(document.getElementById('income').value);
+            const incomeDate = document.getElementById('income-date').value;
+
+            if (isNaN(income) || !incomeDate) {
+                alert('Please enter valid details for the income.');
+                return;
+            }
+
+            incomes.push({ amount: income, date: new Date(incomeDate) });
+
+            document.getElementById('income').value = '';
+            document.getElementById('income-date').value = '';
+        }
+
+        function calculateBudget() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+
+            if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+                alert('Please enter a valid date range.');
+                return;
+            }
+
+            const filteredExpenses = expenses.filter(expense => expense.date >= startDate && expense.date <= endDate);
+            const filteredIncomes = incomes.filter(income => income.date >= startDate && income.date <= endDate);
+
+            const totalFilteredExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const totalFilteredIncome = filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
+
+            const balance = totalFilteredIncome - totalFilteredExpenses;
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+
+            if (balance > 0) {
+                resultDiv.textContent = `You have a surplus of $${balance.toFixed(2)} for the selected date range.`;
+            } else if (balance < 0) {
+                resultDiv.textContent = `You have a deficit of $${Math.abs(balance).toFixed(2)} for the selected date range.`;
+            } else {
+                resultDiv.textContent = 'Your income and expenses are balanced for the selected date range.';
+            }
+        }
+    </script>
 </body>
-<script src="/assets/script.js"></script>
 </html>

@@ -1,13 +1,25 @@
-document.addEventListener('DOMContentLoaded', function(){
-console.log("hello")
+document.addEventListener('DOMContentLoaded', function () {
+    const addExpenseBtn = document.getElementById('addExpenseBtn');
+    const expenseForm = document.getElementById('expenseForm');
+    const saveExpenseBtn = document.getElementById('saveExpenseBtn');
 
-    const expenseBtn = document.getElementById('expenseBtn')
-    const expenseTitle = document.getElementById('expenseTitle')
-    const expenseAmnt = document.getElementById('expenseAmnt')
-    const expenseForm = document.getElementsByClassName('hidden')
+    addExpenseBtn.addEventListener('click', function () {
+        expenseForm.classList.toggle('hidden');
+    });
 
-    expenseBtn.addEventListener('click', function() {
-        expenseForm.classList.('hidden')
-    })
-})
+    saveExpenseBtn.addEventListener('click', function () {
+        const title = document.getElementById('expenseTitle').value;
+        const amount = document.getElementById('expenseAmount').value;
 
+        // You can perform further actions with the title and amount, e.g., save to a database, update UI, etc.
+
+        // For simplicity, let's just log the values to the console for now
+        console.log('Title:', title);
+        console.log('Amount:', amount);
+
+        // Reset the form and hide it
+        document.getElementById('expenseTitle').value = '';
+        document.getElementById('expenseAmount').value = '';
+        expenseForm.classList.add('hidden');
+    });
+});
